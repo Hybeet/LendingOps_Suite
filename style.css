@@ -1,0 +1,714 @@
+/* ========================================================= */
+/* SUBSECTION 2A: GLOBAL ARCHITECTURE VARIABLES              */
+/* ========================================================= */
+:root {
+    --primary: #0f172a;
+    --accent: #2563eb;
+    --success: #10b981;
+    --danger: #ef4444;
+    --light-border: #cbd5e1;
+    --bg-slate: #f1f5f9;
+}
+
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+    color: #000000;
+    scroll-behavior: smooth;
+    background-color: var(--bg-slate);
+}
+
+/* =========================================================================
+   🌐 SYSTEM CORE BACKGROUND: 3D PERSPECTIVE INFINITE GRID SHADER
+   ========================================================================= */
+body.homepage-root-wrapper {
+    background-color: #f8fafc !important; 
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden; /* Prevents any 3D layout tilt from creating weird side scrollbars */
+    position: relative;
+}
+
+/* 🪐 The Pseudo-Element that warps the grid inward toward the horizon */
+body.homepage-root-wrapper::before {
+    content: "";
+    position: fixed;
+    top: -50%;  /* Stretches it up high past the viewport */
+    left: -50%; /* Widens it out to prevent empty corners during rotation */
+    width: 200%;
+    height: 200%;
+    
+    /* The core grid vector lines */
+    background-image: 
+        linear-gradient(to right, rgba(148, 163, 184, 0.406) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(148, 163, 184, 0.4) 1px, transparent 1px) !important;
+    background-size: 40px 40px !important; /* Slightly larger grid squares look better in 3D */
+    
+    /* 🛸 THE 3D MAGIC: Tilts the grid back so it angles inward toward the horizon */
+    transform: perspective(500px) rotateX(60deg);
+    transform-origin: center center;
+    
+    /* Keeps it strictly behind your control center content cards */
+    z-index: -1; 
+    pointer-events: none;
+}
+
+/*NAVIGATION BAR STYLING */
+.global-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: var(--primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    box-sizing: border-box;
+    z-index: 2000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nav-logo { color: #ffffff; font-weight: 800; font-size: 1.3rem; }
+.nav-links { display: flex; gap: 15px; }
+.nav-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #94a3b8;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.nav-btn:hover, .nav-btn.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+
+/* ========================================================= */
+/* SUBSECTION 2C: LAYOUT PORTALS & WRAPPERS                  */
+/* ========================================================= */
+.page-container { padding-top: 100px; padding-bottom: 40px; box-sizing: border-box; min-height: 100vh;  }
+.hidden { display: none !important; }
+
+.welcome-hero { text-align: center; max-width: 800px; margin: 40px auto 60px auto; }
+.welcome-hero h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
+.welcome-hero p { font-size: 1.1rem; color: #475569; line-height: 1.6; }
+
+.info-cards-grid { 
+display: grid; 
+grid-template-columns: 1fr 1fr; 
+gap: 30px; 
+width: 92%;
+max-width: 1400px; 
+margin: 0 auto; 
+padding: 0 20px; 
+}
+
+.info-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
+.card-icon { font-size: 2.5rem; margin-bottom: 20px; }
+.gateway-card { border: 2px solid var(--accent); }
+.action-link-btn { margin-top: 25px; background: var(--accent); color: white; padding: 14px 28px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+.info-card :hover .card-icon { transform: translateY(-5px); transition: transform 0.3s ease; }
+/* =========================================================================
+   📊 ORIGINAL BUSINESS REPORT PARSER 3.0 CSS (UNTOUCHED CORE)
+   ========================================================================= */
+.main-wrapper { 
+    max-width: 1400px; 
+    margin: auto; 
+    background-color: #eaf2f9;
+    padding: 30px;
+}
+
+header { 
+    text-align: center; 
+    margin-bottom: 30px; 
+}
+
+header h2 { 
+    margin: 0 0 5px 0; 
+    color: var(--primary); 
+}
+
+.dashboard-grid { 
+    display: grid; 
+    grid-template-columns: 360px 1fr 400px; 
+    gap: 20px; 
+    align-items: start; 
+}
+
+.left-compartment { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+}
+
+.panel { 
+    background: white; 
+    padding: 20px; 
+    border-radius: 12px; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); 
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box; 
+}
+
+.panel h3 { 
+    margin-top: 0; 
+    margin-bottom: 15px;
+    font-size: 1.1rem; 
+    color: var(--primary); 
+    border-bottom: 2px solid #cbd5e1; 
+    padding-bottom: 6px; 
+}
+
+textarea { 
+    width: 100%; 
+    height: 450px; 
+    border: 2px solid var(--light-border);
+    border-radius: 8px; 
+    padding: 12px; 
+    font-family: monospace; 
+    box-sizing: border-box; 
+    resize: none; 
+    background-color: #fafafa;
+}
+
+.mini-calc-panel {
+    background: #f8fafc; 
+    border: 1px dashed var(--accent);
+}
+
+.mini-calc-panel2 {
+    background: #f8fafc; 
+    border: 1px dashed var(--accent);
+    padding: 15px; 
+    border-radius: 8px;
+    margin-top: 15px;
+    box-sizing: border-box;
+}
+
+.calc-grid, .calc-grid2 { 
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.calc-input { 
+    width: 100%; 
+    padding: 8px !important; 
+    text-align: center;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.calc-action-btn { 
+    background: var(--accent); 
+    color: white; 
+    border: none; 
+    border-radius: 6px; 
+    padding: 8px; 
+    width: 100%;
+    font-weight: bold; 
+    font-size: 0.85rem;
+    cursor: pointer; 
+}
+
+.calc-action-btn:hover { 
+    background: greenyellow; 
+    color: #0f172a;
+}
+
+.calc-result-box { 
+    margin-top: 15px;
+    background-color: var(--primary); 
+    color: #ffffff;
+    padding: 10px; 
+    border-radius: 6px; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.calc-result-box strong { 
+    color: #38bdf8;
+    font-size: 1.1rem; 
+}
+
+.metadata-bar { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr;
+    gap: 15px; 
+    background: #f1f5f9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #cbd5e1; 
+}
+
+.metadata-group label { 
+    display: block;
+    color: #475569;
+    text-transform: uppercase;
+    margin-bottom: 4px; 
+    font-size: 10px; 
+    font-weight: 800;
+    letter-spacing: 0.5px; 
+}
+
+.metadata-group input[type="text"] { 
+    width: 100%; 
+    padding: 8px; 
+    border: 1px solid #cbd5e1; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    background: #e2e8f0;
+    color: #0f172a;
+    font-weight: bold;
+    cursor: not-allowed; 
+}
+
+.form-section { 
+    background: #f8fafc; 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 15px; 
+    border: 1px solid #dbeafe; 
+}
+
+.form-section h4 { 
+    margin: 0 0 10px 0; 
+    color: var(--accent); 
+    border-bottom: 1px solid #bfdbfe; 
+}
+
+.grid-2 { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px; 
+}
+
+.input-group label { 
+    display: block; 
+    font-size: 11px; 
+    font-weight: bold; 
+    color: #64748b; 
+    text-transform: uppercase; 
+}
+
+input { 
+    width: 100%; 
+    padding: 8px; 
+    border: 1px solid #cbd5e1; 
+    border-radius: 6px; 
+    box-sizing: border-box; 
+}
+
+button { 
+    width: 100%; 
+    padding: 15px; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    margin-top: 10px; 
+    font-size: 1rem; 
+}
+
+#calculateBtn { 
+    background: var(--success); 
+    color: white; 
+}
+
+.secondary-btn { 
+    background: var(--accent); 
+    color: white; 
+}
+
+.result-card { 
+    padding: 20px; 
+    border-radius: 12px; 
+    color: white; 
+    margin-bottom: 15px; 
+    text-align: center; 
+}
+
+.total-cash-card { 
+    background: var(--primary); 
+}
+
+.actual-coll-card { 
+    background: #1e293b; 
+    border-bottom: 4px solid var(--success); 
+}
+
+.result-card h2 { 
+    font-size: 2rem; 
+    margin: 5px 0; 
+    color: #60a5fa; 
+}
+
+.caution { 
+    background: #fff5f5; 
+    border-left: 5px solid var(--danger); 
+    padding: 15px; 
+    border-radius: 8px; 
+    margin-bottom: 20px; 
+    animation: shake 0.5s; 
+}
+
+@keyframes shake { 
+    0%, 100% { transform: translateX(0); } 
+    25% { transform: translateX(-5px); } 
+    50% { transform: translateX(5px); } 
+}
+
+.hidden { 
+    display: none; 
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 12px; 
+}
+
+th, td { 
+    text-align: left; 
+    padding: 8px; 
+    border-bottom: 1px solid #e2e8f0; 
+}
+
+footer button a {
+    color: rgb(69, 144, 236);
+    text-decoration: underline;
+}
+
+/* =========================================================================
+   🎛️ DATACORE MATRIX FRAMEWORK INTERFACE (APPENDED BELOW)
+   ========================================================================= */
+.datacore-container {
+    width: 100%;
+    max-width: 1400px !important;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    background: #ffffff;
+    border-top: 4px solid var(--accent) !important;
+    position: relative;
+}
+.datacore-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.datacore-header h3 {
+    margin: 0 0 5px 0;
+    border: none !important;
+}
+.status-subtext {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+.datacore-summary-badge {
+    background: #f1f5f9;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    border: 1px solid #e2e8f0;
+    color: #334155;
+}
+.datacore-summary-badge strong {
+    color: var(--success);
+}
+.table-scroll-container {
+    height: 400px;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+.datacore-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    white-space: nowrap;
+}
+.datacore-data-table th {
+    position: sticky;
+    top: 0;
+    background: #0f172a;
+    color: #f1f5f9;
+    padding: 12px 10px;
+    font-weight: 600;
+    z-index: 10;
+}
+.datacore-data-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    vertical-align: middle;
+}
+.grid-inline-input {
+    width: 100%;
+    padding: 6px !important;
+    border: 1px solid var(--light-border);
+    border-radius: 4px;
+    font-weight: bold;
+    color: #0f172a;
+}
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+}
+.badge-active { background: #d1fae5; color: #065f46; }
+.badge-default { background: #fee2e2; color: #991b1b; }
+.badge-recovery { background: #e0f2fe; color: #0369a1; }
+
+.sync-matrix-btn {
+    background: #94a3b8;
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    transition: background 0.2s ease;
+}
+.loader-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+.spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 10px;
+}
+
+#datacore-loading-state {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* TRACKER NAVIGATION STYLING */
+.tracker-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0 10px;
+}
+.tracker-btn {
+    background: #e2e8f0;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.tracker-active {
+    background: var(--accent) !important;
+    color: white !important;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================================================
+   📌 DYNAMIC FLOATING DATACORE NAVIGATION LAYER
+   ========================================================================= */
+.nav-datacore-panel {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease-in-out;
+    z-index: 2500; /* Keeps it layered safely above tables and input forms */
+    margin-bottom: 20px;
+}
+
+/* Floating Corner State triggered via JS on Scroll */
+.nav-datacore-panel.scrolled {
+    position: fixed;
+    flex-direction: column;
+    top: 85px;      /* Just below the global navbar */
+    right: 25px;    /* Pins it to the exact right corner */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-color: #94a3b8;
+    animation: datacoreSnapIn 0.2s ease-out;
+}
+
+.nav-btn {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    font-weight: bold;
+    color: #334155;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.nav-btn.active {
+    background: #2563eb !important;
+    color: white !important;
+    border-color: #2563eb !important;
+}
+
+@keyframes datacoreSnapIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================================
+   📚 UPSUIT 4.0 INTERACTIVE KNOWLEDGE HUB CUSTOM STYLING
+   ========================================================================= */
+
+#upsuit-knowledge-hub {
+    width: 92%; /* 💡 Ensures the grid container doesn't stretch too wide on large screens */
+    max-width: 1400px; /* 💡 56rem equals max-w-4xl (exactly matching your workspace buttons card length) */
+    margin-left: auto;  /* 💡 Centers the grid container horizontally */
+    margin-right: auto; /* 💡 Centers the grid container horizontally */
+    margin-top: 3.5rem;
+    margin-bottom: 4rem;
+    /*padding-left: 1rem;  /* Prevents touching the edge on mobile screens */
+    /*padding-right: 1rem; /* Prevents touching the edge on mobile screens */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.knowledge-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .knowledge-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.knowledge-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.knowledge-card:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transform: translateY(-1px);
+}
+
+.knowledge-card.active-card {
+    border-color: #3b82f6;
+    background-color: #f8fafc;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
+}
+
+.hub-title-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.hub-icon-box {
+    background-color: #eff6ff;
+    color: #2563eb;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title-text {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #334155;
+    letter-spacing: 0.05em;
+}
+
+.toggle-icon {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+.card-preview-text {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+}
+
+/* Clearer dynamic code/math formulas styling */
+.formula-block {
+    background-color: #f1f5f9;
+    border-left: 3px solid #3b82f6;
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.business-example-box {
+    font-size: 0.8125rem;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.highlight-blue { color: #2563eb; font-weight: bold; }
+.highlight-red { color: #dc2626; font-weight: bold; }
+
+.hub-content {
+    transition: all 0.25s ease-out;
+}
+
+.hidden {
+    display: none !important;
+}

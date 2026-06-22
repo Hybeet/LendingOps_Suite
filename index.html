@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Parser 4.0 - Integrated DataCore Suite</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="homepage-root-wrapper">
+
+    <nav class="global-navbar">
+        <!--<div><img src="/images/TOFS LOGO 2.png" alt="T.O.F.S" height="20"></div>-->
+        <div class="nav-logo">LendingOps Suite</div>
+        <div class="nav-links">
+            <button id="nav-home-btn" class="nav-btn active">🏠 Home Dashboard</button>
+            <button id="nav-workspace-btn" class="nav-btn">💼 Daily Workspace</button>
+        </div>
+    </nav>
+
+    <div id="home-page" class="page-container">
+        <div class="welcome-hero">
+            <h1>Lending Operations Control Center</h1>
+            <p>Welcome back. Monitor, parse and reconcile your daily 25-day market loan cycles with absolute data ledger precision.</p>
+        </div>
+
+        <div class="info-cards-grid">
+            <div class="info-card">
+                <div class="card-icon">🔄</div>
+                <h3>25-Day Daily Repayment Track</h3>
+                <p>Manage micro-finance field accounts structured under a strict 25-day daily installment runtime environment (Monday to Friday). 
+                    Monitor metrics directly from initial loan disbursement up to zero remaining balance liquidation.</p>
+            </div>
+            
+            <div class="info-card gateway-card">
+                <div class="card-icon">💱📊🧮</div>
+                <h3>Integrated Daily Processing Stream</h3>
+                <p>Access your complete functional runtime interface. Drop raw WhatsApp field texts directly into Parser 3.0, 
+                    scroll down to access the live DataCore database ledger table and dispatch structural adjustments seamlessly.</p>
+                <button id="enter-workspace-btn" class="action-link-btn">Open Workspace ➔</button>
+            </div>
+        </div>
+
+        <!--KNOWLEDGE HUB-->
+        <div id="upsuit-knowledge-hub" class="max-w-4xl mx-auto px-4">
+            <div class="hub-title-container mb-6">
+                <div class="hub-icon-box">📚</div>
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800" style="margin: 0;">Operations Knowledge Hub</h3>
+                    <p class="text-xs text-slate-500" style="margin: 2px 0 0 0;">Click any card matrix below to expand definitions, 
+                        calculations and operational balancing examples.</p>
+                </div>
+            </div>
+
+            <div class="knowledge-grid">
+                
+                <div class="knowledge-card" onclick="toggleHubAccordion(this)">
+                    <div class="card-header-flex">
+                        <span class="card-title-text">💰 Total Cash Today</span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <p class="card-preview-text">The net physical liquid cash that must match the supervisor's physical vault balance at close of day.</p>
+                    
+                    <div class="hub-content hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                        <div class="formula-block">
+                            <span class="highlight-blue">Formula:</span><br>
+                            (Opening Cash + Opening PD + Cash From Office + Supposed Coll + Recovery + Interest + Forms + Cards + Pay Off + Today's PD) <br>
+                            <span class="highlight-red">MINUS</span> <br>
+                            (Used PD + Bank Deposit + Default + Cost of Deals)
+                        </div>
+                        <div class="business-example-box">
+                            <strong>Business Example:</strong> If an officer comes back with field collections, any cash expenses or bank deposits must be deducted from the gross receipts to find the exact final physical cash volume.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card" onclick="toggleHubAccordion(this)">
+                    <div class="card-header-flex">
+                        <span class="card-title-text">📊 Actual Collection</span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <p class="card-preview-text">The true, organic financial yield recovered from the market field during active tracking cycles.</p>
+                    
+                    <div class="hub-content hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                        <div class="formula-block">
+                            <span class="highlight-blue">Formula:</span><br>
+                            Supposed Collection - Default + Recovery + Pay Off + Today's PD - Used PD
+                        </div>
+                        <div class="business-example-box">
+                            <strong>Business Example:</strong> If a market has a target baseline of ₦100,000 but ₦10,000 defaulted and ₦5,000 extra was brought in via recoveries, the Actual Collection matches ₦95,000.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card" onclick="toggleHubAccordion(this)">
+                    <div class="card-header-flex">
+                        <span class="card-title-text">🔄 Pay Down (PD) System</span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <p class="card-preview-text">Understanding Advance Payments: Opening Pay Down vs. Today's Pay Down vs. Used Pay Down.</p>
+                    
+                    <div class="hub-content hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                        <div class="business-example-box space-y-2">
+                            <p>📌 <strong>Opening PD:</strong> Surplus funds holding in a client's savings card at start of day.</p>
+                            <p>📌 <strong>Today's PD:</strong> Brand new extra advance money deposited by the client today.</p>
+                            <p>📌 <strong>Used PD:</strong> Actively drawing down from their card balance to pay today's daily rate instead of using cash.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card" onclick="toggleHubAccordion(this)">
+                    <div class="card-header-flex">
+                        <span class="card-title-text">🛡️ Recovery & Outstanding Logic</span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <p class="card-preview-text">How missed cards handle debt collection and separate isolated transactions from the cell totals.</p>
+                    
+                    <div class="hub-content hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                        <div class="business-example-box space-y-2">
+                            <p><strong>The Core Rule:</strong> When a client defaults, their debt moves to Outstanding. When they pay back extra later, it is flagged as a <em>Recovery</em>.</p>
+                            <div class="p-2.5 bg-blue-50 border-l-2 border-blue-500 rounded text-xs text-slate-700">
+                                <strong>Real Example:</strong> Daily rate = ₦3,600. Client pays ₦4,100 total. The ledger grid saves ₦4,100 to update the bank matrix, but isolates the <strong>₦500</strong> to stamp the sheet comment cleanly as "Recovery of ₦500".
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card" onclick="toggleHubAccordion(this)">
+                    <div class="card-header-flex">
+                        <span class="card-title-text">💰 Pay Off Matrix</span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <p class="card-preview-text">The final lump-sum liquidation settlement processed to completely close out an active loan tracking file.</p>
+                    
+                    <div class="hub-content hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                        <div class="formula-block">
+                            <span class="highlight-blue">Impact Profile:</span><br>
+                            Increases Actual Collection Total & Physical Cash Balance<br>
+                            <span class="highlight-red">System Rule:</span> Reduces Remaining Balance instantly to ₦0.
+                        </div>
+                        <div class="business-example-box">
+                            <strong>Business Example:</strong> If a client owes a remaining principal balance of ₦15,000 across their remaining 25-day cycle but decides to pay it all down immediately to close the account, this entire bulk amount is recorded as a <strong>Pay Off</strong>, terminating the tracking loop.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="knowledge-card" onclick="toggleHubAccordion(this)">
+                    <div class="card-header-flex">
+                        <span class="card-title-text">📅 Next Day Collection</span>
+                        <span class="toggle-icon">▶</span>
+                    </div>
+                    <p class="card-preview-text">Pre-calculated installment projection metric used to prepare field officers for the upcoming morning route run.</p>
+                    
+                    <div class="hub-content hidden mt-4 pt-4 border-t border-slate-100 space-y-3">
+                        <div class="formula-block">
+                            <span class="highlight-blue">Baseline Equation:</span><br>
+                            Sum of (Active Standard Daily Repayments) for all open non-settled accounts assigned to a specific market track.
+                        </div>
+                        <div class="business-example-box">
+                            <strong>Business Example:</strong> This metric gives the operations manager an exact target pipeline figure. If a market lane contains 10 active customers who each pay a flat ₦3,600 daily rate, the <strong>Next Day Collection</strong> baseline target will automatically flag as ₦36,000 for the morning ledger preparation.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--END OF KNOWLEDGE HUB-->
+
+    </div>
+
+    <!--DYNAMIC FLOATING DATACORE NAVIGATION-->
+    <div id="workspace-page" class="page-container hidden">
+        
+        <div id="dynamic-nav-datacore" class="nav-datacore-panel">
+            <button id="jump-to-parser" class="nav-btn active">📥 1. Report Parser 3.0</button>
+            <button id="jump-to-datacore" class="nav-btn">⚙️ 2. Operations DataCore</button>
+        </div>
+
+        <div class="main-wrapper" id="parser-section">
+            <header>
+                <h2>📊 Business Report Parser 3.0 Pro</h2>
+                <p><strong>Data Extraction, Interactive Verification Form and Quick Utilities.</strong></p>
+            </header>
+
+            <div class="dashboard-grid">
+                <div class="left-compartment">
+                    <div class="column panel">
+                        <h3>1. Paste Report</h3>
+                        <textarea id="reportInput" placeholder="Paste your daily report here..."></textarea>
+                        <button type="button" id="autoFillBtn" class="secondary-btn">Step 1: Extract Data ➔</button>
+                    </div>
+                    <div class="mini-calc-panel column panel">
+                        <h3>Next Day Collection Calculator</h3>
+                        <small>Calculate next day's collection based on today's data</small>
+                        <div class="calc-grid">
+                            <input type="number" id="supposeColl2" placeholder="Supposed Collection" class="calc-input">
+                            <div>
+                                <input type="number" id="calcCell2" placeholder="Finished Deals" class="calc-input">
+                                <input type="number" id="calcCell3" placeholder="New Deals" class="calc-input">
+                            </div>
+                            <input type="number" id="payOff2" placeholder="Payoff Collected Today" class="calc-input">
+                        </div>
+                    <button type="button" id="calcNextDayBtn" class="calc-action-btn">Calculate Next Day Collection</button>
+                        <div class="calc-result-box">
+                            <span>Next Day Collection:</span>
+                            <strong id="nextDayCollection">₦0.00</strong>
+                        </div>
+                    </div>  
+                </div>
+
+                <div class="column panel">
+                    <h3>2. Verify Data</h3>
+                    
+                    <div class="metadata-bar">
+                        <div class="metadata-group">
+                            <label>Extracted Date:</label>
+                            <input type="text" id="displayDate" placeholder="Waiting for extraction..." readonly>
+                        </div>
+                        <div class="metadata-group">
+                            <label>Extracted Market/Location:</label>
+                            <input type="text" id="displayMarket" placeholder="Waiting for extraction..." readonly>
+                        </div>
+                    </div>
+
+                    <form id="parserForm">
+                        <div class="form-section">
+                            <h4>Cash Handled</h4>
+                            <div class="grid-2">
+                                <div class="input-group"><label>Opening Cash</label><input type="number" id="openingCash" value="0"></div>
+                                <div class="input-group"><label>Bank Deposit</label><input type="number" id="TotalDeposit" value="0"></div>
+                                <div class="input-group"><label>Office Cash</label><input type="number" id="officecash" value="0"></div>
+                                <div class="input-group"><label>Cost of Deals</label><input type="number" id="costOfDeals" value="0"></div>
+                                <div class="input-group"><label>Interest</label><input type="number" id="interestOnDeals" value="0"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h4>Collection Analysis</h4>
+                            <div class="input-group"><label>Supposed Collection</label><input type="number" id="supposeColl" value="0"></div>
+                            <div class="grid-2">
+                                <div class="input-group"><label>Default</label><input type="number" id="defaultAmt" value="0"></div>
+                                <div class="input-group"><label>Recovery</label><input type="number" id="recovery" value="0"></div>
+                                <div class="input-group"><label>Opening PD <strong>(office pd should not be included)</strong></label><input type="number" id="openingpd" value="0"></div>
+                                <div class="input-group"><label>Today's PD</label><input type="number" id="todayPd" value="0"></div>
+                                <div class="input-group"><label>Used PD</label><input type="number" id="usedPd" value="0"></div>
+                            </div>
+                            <div class="input-group"><label>Pay Off Collected</label><input type="number" id="payOff" value="0"></div>
+                            <div class="grid-2">
+                                <div class="input-group"><label>Forms Sold</label><input type="number" id="formsSold" value="0"></div>
+                                <div class="input-group"><label>Cards Sold</label><input type="number" id="cardsSold" value="0"></div>
+                            </div>
+                        </div>
+                        <div id="mismatch-warning-flag" 
+                             style="display: none; background-color: #7f1d1d; border: 2px solid #ef4444; 
+                             color: #fecaca; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <strong>⚠️ WARNING: Data Mismatch Detected!</strong>
+                            <p id="warning-details">The values you are calculating do not match the original record previously synced to the Google Sheet for this report.</p>
+                            <br/>
+                            <label style="color: #fca5a5; font-weight: bold; cursor: pointer; 
+                            display: inline-flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="overwrite-override-checkbox">
+                                I have verified the new inputs are correct. Overwrite the existing sheet record.
+                            </label>
+                        </div>
+                        <button type="button" id="calculateBtn">Step 2: Run Calculation &amp; Sync Ledger</button>
+                    </form>
+
+                    <div class="mini-calc-panel2">
+                        <h3>Outstanding Calculator</h3>
+                        <small>Calculate Outstanding based on today's data</small>
+                        <div class="calc-grid2">
+                            <div><input type="number" id="previousoutstanding" placeholder="Previous Outstanding" class="calc-input"></div>
+                            <div><input type="number" id="inheritedoutstanding" placeholder="Inherited Outstanding" class="calc-input"></div>
+                            <div><input type="number" id="myoutstanding" placeholder="My Outstanding" class="calc-input"></div>
+                            <div><input type="number" id="defaultAmt2" placeholder="Default" class="calc-input"></div>
+                            <div><input type="number" id="recovery2" placeholder="Recovery" class="calc-input"></div>                    
+                        </div>
+                        <button type="button" id="calcOutstandingBtn" class="calc-action-btn">Calculate Outstanding</button>
+                        <div class="calc-result-box">
+                            <span>Outstanding:</span>
+                            <strong id="outstandingResult">₦0.00</strong>
+                        </div>
+                    </div>  
+                </div>
+
+                <div class="column">
+                    <div id="errorBox" class="hidden caution">
+                        <strong>⛔ Missing in Report:</strong>
+                        <ul id="missingList"></ul>
+                    </div>
+
+                    <div id="dashboard" class="hidden">
+                        <div class="result-card total-cash-card">
+                            <small>Calculated Total Cash</small>
+                            <h2 id="totalCashDisplay">₦0.00</h2>
+                        </div>
+                        <div class="result-card actual-coll-card">
+                            <small>Actual Collection</small>
+                            <h2 id="actualDisplay">₦0.00</h2>
+                        </div>
+
+                        <div class="audit-panel panel">
+                            <h3>Data Audit Trail</h3>
+                            <div id="tableContainer"></div>
+                        </div>
+                        <div>
+                            <button id="clear-workspace-btn" class="action-btn" style="background-color: #64748b; color: white; padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;">
+                                🔄 Reset Workspace
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="section-divider" id="datacore-section">
+            
+            <div class="datacore-container panel">
+                <div class="datacore-header">
+                    <div>
+                        <h3>🎛️ Field Registry Reconciliation DataCore</h3>
+                        <p id="datacore-status-subtext" class="status-subtext">Waiting for market data extraction step from the report module above...</p>
+                    </div>
+                    <div class="datacore-summary-badge">
+                        <span>Reconciliation Cross-Total:</span>
+                        <strong id="grid-actual-total">₦0.00</strong> / <span id="parser-verified-total">₦0.00</span>
+                    </div>
+                </div>
+
+                <div id="datacore-loading-state" class="loader-overlay hidden">
+                    <div class="spinner"></div>
+                    <p>Querying target market registry profiles...</p>
+                </div>
+
+                <div class="table-scroll-container">
+                    <table class="datacore-data-table">
+                        <thead>
+                            <tr>
+                                <th>Account Name</th>
+                                <th>Borrower Unique Number</th>
+                                <th>Loan Unique Number</th>
+                                <th>Principal Amount</th>
+                                <th>Form</th>
+                                <th>Card</th>
+                                <th>Daily Repayment</th>
+                                <th>Total Amount paid</th>
+                                <th>Branch ID</th>
+                                <th>Loan Disbursement Date</th>
+                                <th>Market/Officer Name</th>
+                                <th style="width: 130px;">Collected Today</th>
+                                <th>Audit Tag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-grid-body">
+                            <tr>
+                                <td colspan="13" style="text-align: center; color: #64748b; padding: 20px;">
+                                    No active session found. Paste a text report above and hit "Extract Data" to instantiate the datacore grid.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="datacore-actions">
+                    <button type="button" id="sync-ledger-sheets-btn" onclick="postDataCoreTransactionsToSheets()" class="sync-matrix-btn" disabled>
+                        Post Real-Time Matrix Collections directly to Sheets Tab ➔
+                    </button>
+                </div>
+            </div>
+            <footer>
+                <p><strong>Get your synced Data by clicking the button below:</strong></p>
+                <button type="button" id="syncBtn" class="primary-btn">
+                    <a href="https://docs.google.com/spreadsheets/d/113ybJNtsmhwXSPuKVpYcB9LzW6ooDTNA9cMfXfooLxs/edit?usp=sharing" target="_blank">Sync Data & View Dashboard</a>
+                </button>
+            </footer>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
