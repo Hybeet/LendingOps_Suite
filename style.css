@@ -810,87 +810,121 @@ footer button a {
 }
 
 /* =========================================================================
-   📱 MOBILE HEADER & CARD TYPOGRAPHY OPTIMIZATION (Max-Width: 768px)
+   📱 MOBILE HEADER & CARD COMPACT ENGINE (Max-Width: 768px)
    ========================================================================= */
 @media screen and (max-width: 768px) {
 
-    /* 1. Tighten the Top Navigation Header Bar Container */
-    header, 
-    .nav-container,
-    div[style*="display: flex"][style*="justify-content: space-between"] {
-        padding: 8px 12px !important;
-        min-height: auto !important;
+    /* 1. Slim Down the Main Top Navigation Bar Container */
+    .global-navbar {
+        padding: 10px 14px !important;
+        height: auto !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
         gap: 8px !important;
     }
 
-    /* 2. Scale Down the Application Title Branding Text */
-    .LendingOps-title,
-    header h1,
-    header div {
-        font-size: 18px !important;
-        letter-spacing: -0.3px !important;
+    /* Keep Title Small and Compact */
+    .global-navbar .nav-logo {
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.3px;
     }
 
-    /* 3. Drop Navigation Button Layout Spacing & Text Sizes */
-    header button,
-    .nav-btn,
-    a[class*="Dashboard"],
-    a[class*="Workspace"] {
+    /* Reduce Button Sizing to Fit Side-by-Side on Narrow Screen Viewports */
+    .global-navbar .nav-links {
+        display: flex !important;
+        gap: 6px !important;
+    }
+
+    .global-navbar .nav-btn {
         padding: 6px 10px !important;
-        font-size: 12px !important;
-        gap: 4px !important;
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        border-radius: 6px !important;
     }
 
-    header button img, 
-    .nav-btn i {
-        transform: scale(0.85); /* Scales down navigation icon graphics slightly */
+    /* 2. Compact the Floating Workspace Section Jumper Bar Panels */
+    .nav-datacore-panel {
+        padding: 6px !important;
+        gap: 6px !important;
+        margin: 10px auto !important;
+        width: 95% !important;
     }
 
-    /* 4. Compact the Main Control Center Header Wording Block */
-    .Control-Center-Header h1,
-    main > h1,
-    h2 {
-        font-size: 24px !important;
-        line-height: 1.2 !important;
+    .nav-datacore-panel .nav-btn {
+        padding: 8px !important;
+        font-size: 11px !important;
+        text-align: center !important;
+    }
+
+    /* 3. Drop Wording Scaling in Hero Box Components */
+    .welcome-hero {
+        padding: 20px 14px !important;
+        text-align: center !important;
+    }
+
+    .welcome-hero h1 {
+        font-size: 22px !important;
+        line-height: 1.25 !important;
         margin-bottom: 8px !important;
     }
 
-    main > p,
-    .sub-wording-text {
+    .welcome-hero p {
         font-size: 13px !important;
         line-height: 1.4 !important;
-        padding: 0 10px !important;
     }
 
-    /* 5. Downsize Dashboard Card Text Content & Padding Elements */
-    .card-control-center-wrapper > div,
-    .grid-card-selector {
-        padding: 16px !important; /* Reduces large structural interior padding */
+    /* 4. Downscale Main Home Grid Content & Text Descriptions */
+    .info-cards-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        padding: 0 12px !important;
+    }
+
+    .info-card {
+        padding: 16px !important;
         border-radius: 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    .info-card .card-icon {
+        font-size: 20px !important;
+        margin-bottom: 8px !important;
     }
 
     /* Card Titles */
-    .card-control-center-wrapper h3,
-    .grid-card-selector h2,
-    .grid-card-selector h3 {
-        font-size: 16px !important;
-        margin-top: 10px !important;
+    .info-card h3 {
+        font-size: 15px !important;
+        margin-top: 4px !important;
         margin-bottom: 6px !important;
     }
 
-    /* Card Description Wordings */
-    .card-control-center-wrapper p,
-    .grid-card-selector p {
+    /* Card Paragraph Wordings */
+    .info-card p {
         font-size: 12px !important;
-        line-height: 1.4 !important;
-        color: #4b5563 !important; /* Kept clean and readable */
-        margin-bottom: 12px !important;
+        line-height: 1.45 !important;
+        color: #4b5563 !important;
     }
 
-    /* Card Internal Action Buttons */
-    .card-control-center-wrapper button,
-    .card-control-center-wrapper a {
-        padding: 10px 14px !important;
+    /* Compact Action Buttons inside Cards */
+    .info-card .action-link-btn {
+        width: 100% !important;
+        padding: 10px !important;
         font-size: 13px !important;
+        margin-top: 12px !important;
+        text-align: center;
+    }
+
+    /* 5. Sub-Header Titles inside Workspace Views */
+    #parser-section header h2 {
+        font-size: 18px !important;
+        text-align: center;
+    }
+
+    #parser-section header p {
+        font-size: 12px !important;
+        text-align: center;
     }
 }
