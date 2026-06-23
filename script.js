@@ -85,6 +85,8 @@ function normalizeText(text) {
 // Global Variables to securely cache a raw paste box metadata value
 let extractedMarketName = "Unknown Market"; 
 let extractedReportDate = ""; 
+// [IMPLEMENTATION FIX]: Global cache variable to hold full historical compliance payload parameters
+let cachedSheetHistory = null;
     
 // Helper Function to cleanly format any Date Object to DD/MM/YYYY
 function formatDateToString(dateObj) {
@@ -105,6 +107,13 @@ function extractData() {
     const rawText = document.getElementById('reportInput').value;
     const text = normalizeText(rawText);
     const missingWords = [];
+
+    // [IMPLEMENTATION FIX]: Cleanly reset ui warning boxes and data caches before processing run
+    const extractWarningBox = document.getElementById('extraction-mismatch-flag');
+    if (extractWarningBox) extractWarningBox.style.display = "none";
+    const systemOverrideBox = document.getElementById('sheet-correction-override');
+    if (systemOverrideBox) systemOverrideBox.checked = false; 
+    cachedSheetHistory = null;
 
     // Set dynamic default fallback date
     extractedReportDate = getFormattedCurrentdate();
@@ -130,41 +139,7 @@ function extractData() {
     const marketRegex = /(?:Marke[a-z]*|Locat[a-z]*)[^*:\n]*[*:]*\s*([A-Za-z0-9\s._-]+)/i;
     const marketMatch = text.match(marketRegex);
     
-    if (marketMatch && marketMatch[1].trim() !== "") {
-        let rawMarket = marketMatch[1].trim();
-        extractedMarketName = rawMarket.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
-        
-        const GOOGLE_SHEETS_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbwH5CtYoh2LTTs3hPCxq45ZeJiGTbRcKSdEgW8QBAFW8mp8J1bM4dV31KQSyHW6SP7Z/exec";
-        
-        fetch(`${GOOGLE_SHEETS_API_ENDPOINT}?market=${encodeURIComponent(extractedMarketName)}&excludeDate=${encodeURIComponent(extractedReportDate)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    const previousOutstandingInput = document.getElementById('previousoutstanding');
-                    if (previousOutstandingInput) {
-                        previousOutstandingInput.value = data.previousOutstanding;
-                        console.log(`Successfully pulled prior balance for ${extractedMarketName}: ₦${data.previousOutstanding}`);
-                        
-                        if (typeof runOutstandingCalc === "function") {
-                            runOutstandingCalc();
-                        }
-                    }
-                }
-            })
-            .catch(err => console.error("Error pulling history payload:", err));
-        
-        if (typeof syncParserMetadataToDataCoreEnv === "function") {
-            syncParserMetadataToDataCoreEnv(extractedMarketName, extractedReportDate, text);
-        }
-        
-    } else {
-        extractedMarketName = "Unknown Market";
-        missingWords.push("Market Name");
-    }    
-
-    if (document.getElementById('displayDate')) document.getElementById('displayDate').value = extractedReportDate;
-    if (document.getElementById('displayMarket')) document.getElementById('displayMarket').value = extractedMarketName;
-    
+    // First, map local raw text regex inputs so fields exist for dynamic target validations
     const getValue = (keyword) => {
         const regex = new RegExp(`${keyword}[^0-9\\n]*([0-9,.]+)`, 'i');
         const match = text.match(regex);
@@ -207,6 +182,89 @@ function extractData() {
         }
     }
 
+    // New Deals Automation allocation
+    const costOfDealsElement = document.getElementById('costOfDeals');
+    const costOfDealsVal = costOfDealsElement ? (parseFloat(costOfDealsElement.value) || 0) : 0;
+    const computedNewDealInstallment = costOfDealsVal / 25;
+    
+    const calcCell3Input = document.getElementById('calcCell3');
+    if (calcCell3Input) {
+        calcCell3Input.value = computedNewDealInstallment.toFixed(2);
+    }
+
+    if (marketMatch && marketMatch[1].trim() !== "") {
+        let rawMarket = marketMatch[1].trim();
+        extractedMarketName = rawMarket.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+        
+        const GOOGLE_SHEETS_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzpixGUMPZQ49tCjUdztkFY2orZDGmw4KOodufl3WE0W83FUpfewh5vskTGH6TP7GD1/exec";
+        
+        // [IMPLEMENTATION FIX]: Expanded fetch query parsing framework to pull and auto-validate all historical data metrics safely
+        fetch(`${GOOGLE_SHEETS_API_ENDPOINT}?market=${encodeURIComponent(extractedMarketName)}&excludeDate=${encodeURIComponent(extractedReportDate)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    cachedSheetHistory = data;
+                    
+                    const openingCashInput = document.getElementById('openingCash');
+                    const supposeCollInput = document.getElementById('supposeColl');
+                    const previousOutstandingInput = document.getElementById('previousoutstanding');
+                    
+                    if (previousOutstandingInput) {
+                        previousOutstandingInput.value = data.previousOutstanding;
+                        console.log(`Successfully pulled prior balance for ${extractedMarketName}: ₦${data.previousOutstanding}`);
+                        if (typeof runOutstandingCalc === "function") runOutstandingCalc();
+                    }
+
+                    // Dynamic multi-parameter variance tracker checks
+                    let correctionRequired = false;
+                    let mismatchDetails = [];
+
+                    const currentOpeningCash = parseFloat(openingCashInput ? openingCashInput.value : 0) || 0;
+                    const targetOpeningCash = parseFloat(data.expectedOpeningCash) || 0;
+                    if (currentOpeningCash !== targetOpeningCash) {
+                        correctionRequired = true;
+                        mismatchDetails.push(`Opening Cash Variance (Extracted: ₦${currentOpeningCash.toLocaleString()} vs Sheet Total Cash Today: ₦${targetOpeningCash.toLocaleString()})`);
+                    }
+
+                    const currentSupposedColl = parseFloat(supposeCollInput ? supposeCollInput.value : 0) || 0;
+                    const targetSupposedColl = parseFloat(data.expectedSupposedCollection) || 0;
+                    if (currentSupposedColl !== targetSupposedColl) {
+                        correctionRequired = true;
+                        mismatchDetails.push(`Supposed Collection Variance (Extracted: ₦${currentSupposedColl.toLocaleString()} vs Sheet Next Day Collection: ₦${targetSupposedColl.toLocaleString()})`);
+                    }
+
+                    const currentPrevOutstanding = parseFloat(previousOutstandingInput ? previousOutstandingInput.value : 0) || 0;
+                    const targetPrevOutstanding = parseFloat(data.previousOutstanding) || 0;
+                    if (currentPrevOutstanding !== targetPrevOutstanding) {
+                        correctionRequired = true;
+                        mismatchDetails.push(`Previous Outstanding Variance (Extracted: ₦${currentPrevOutstanding.toLocaleString()} vs Sheet Total Outstanding: ₦${targetPrevOutstanding.toLocaleString()})`);
+                    }
+
+                    // Dynamically render the compliance UI mismatch module layout warning box
+                    const warningDetailsText = document.getElementById('extraction-warning-details');
+                    if (correctionRequired && extractWarningBox) {
+                        if (warningDetailsText) {
+                            warningDetailsText.innerHTML = `⚠️ <strong>Audit Discrepancies Detected:</strong> Current raw report variables do not match yesterday's finalized ledger tracking numbers:<br><ul style="margin-top: 5px; padding-left: 20px; color: #78350f;"><li>` + 
+                            mismatchDetails.join("</li><li>") + `</li></ul>Tick the check box option block below to dynamically force sync input parameters with your sheet database logs.`;
+                        }
+                        extractWarningBox.style.display = "block";
+                    }
+                }
+            })
+            .catch(err => console.error("Error pulling history payload:", err));
+        
+        if (typeof syncParserMetadataToDataCoreEnv === "function") {
+            syncParserMetadataToDataCoreEnv(extractedMarketName, extractedReportDate, text);
+        }
+        
+    } else {
+        extractedMarketName = "Unknown Market";
+        missingWords.push("Market Name");
+    }    
+
+    if (document.getElementById('displayDate')) document.getElementById('displayDate').value = extractedReportDate;
+    if (document.getElementById('displayMarket')) document.getElementById('displayMarket').value = extractedMarketName;
+
     const errorBox = document.getElementById('errorBox');
     const missingList = document.getElementById('missingList');
     if (missingWords.length > 0 && missingList) {
@@ -228,6 +286,13 @@ async function runCalculation() {
 
     if (!isOverrideTicked && warningFlag) {
         warningFlag.style.display = "none";
+    }
+
+    const currentCostOfDeals = getVal('costOfDeals');
+    const validatedNewDeals = currentCostOfDeals / 25;
+    const calcCell3Field = document.getElementById('calcCell3');
+    if (calcCell3Field) {
+        calcCell3Field.value = validatedNewDeals.toFixed(2);
     }
 
     const data = {
@@ -253,7 +318,7 @@ async function runCalculation() {
         inheritedOut: getVal('inheritedoutstanding'), 
         myOut: getVal('myoutstanding'),               
         calcCell2: getVal('calcCell2'),
-        calcCell3: getVal('calcCell3')
+        calcCell3: validatedNewDeals
     };
 
     if (data.suppose === 0 && data.opening === 0) {
@@ -299,7 +364,7 @@ async function runCalculation() {
         data.defaultAmt2 - 
         data.recovery;
 
-    const GOOGLE_SHEETS_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbwH5CtYoh2LTTs3hPCxq45ZeJiGTbRcKSdEgW8QBAFW8mp8J1bM4dV31KQSyHW6SP7Z/exec";
+    const GOOGLE_SHEETS_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbzpixGUMPZQ49tCjUdztkFY2orZDGmw4KOodufl3WE0W83FUpfewh5vskTGH6TP7GD1/exec";
     
     try {
         const verifyUrl = `${GOOGLE_SHEETS_API_ENDPOINT}?checkDate=${encodeURIComponent(extractedReportDate)}&checkMarket=${encodeURIComponent(extractedMarketName)}`;
@@ -414,10 +479,40 @@ function runOutstandingCalc() {
     document.getElementById('outstandingResult').innerText = "₦" + sumtotal.toLocaleString();
 }
 
+// [IMPLEMENTATION FIX]: Interactive Change Event Listener for System Override Checkbox Block
+document.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'sheet-correction-override') {
+        if (e.target.checked && cachedSheetHistory) {
+            const openingCashInput = document.getElementById('openingCash');
+            const supposeCollInput = document.getElementById('supposeColl');
+            const supposeColl2Input = document.getElementById('supposeColl2');
+            const previousOutstandingInput = document.getElementById('previousoutstanding');
+
+            if (cachedSheetHistory.expectedOpeningCash !== undefined && openingCashInput) {
+                openingCashInput.value = cachedSheetHistory.expectedOpeningCash;
+            }
+            if (cachedSheetHistory.expectedSupposedCollection !== undefined) {
+                if (supposeCollInput) supposeCollInput.value = cachedSheetHistory.expectedSupposedCollection;
+                if (supposeColl2Input) supposeColl2Input.value = cachedSheetHistory.expectedSupposedCollection;
+                if (typeof runNextDayCalc === "function") runNextDayCalc();
+            }
+            if (cachedSheetHistory.previousOutstanding !== undefined && previousOutstandingInput) {
+                previousOutstandingInput.value = cachedSheetHistory.previousOutstanding;
+                if (typeof runOutstandingCalc === "function") runOutstandingCalc();
+            }
+            console.log("✅ Confirmation approved: Form fields synced with backend historical tracking data.");
+        }
+    }
+});
+
+// Primary operational trigger event attachment listeners
+document.getElementById('autoFillBtn').addEventListener('click', extractData);
+document.getElementById('calculateBtn').addEventListener('click', runCalculation);
+
 // =========================================================================
 // 🎛️ DATACORE DATA LEDGER GRID DESKTOP CONTAINER (CORRECTED BALANCE ENGINE)
 // =========================================================================
-const DATACORE_REGISTRY_API = "https://script.google.com/macros/s/AKfycbxxSC4Oxx_Q766j8cYdcEWr32MXWjsbhLM7X2NI_-O0k3fdBUQ1DY49m8euwRMRKhjKcA/exec"; 
+const DATACORE_REGISTRY_API = "https://script.google.com/macros/s/AKfycbwaye4TbDVpN1sKpnEUtBXyS2lBwMhm0n-o2UxgM9y1JiodqOymuwpcPKxr77xWnh9_Ig/exec"; 
 
 let dataCoreSessionState = {
     activeMarket: "",

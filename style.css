@@ -712,3 +712,99 @@ footer button a {
 .hidden {
     display: none !important;
 }
+
+/* =========================================================================
+   📱 MOBILE LAYOUT COMPLIANCE ENGINE (Max-Width: 768px)
+   ========================================================================= */
+@media screen and (max-width: 768px) {
+    
+    /* 1. Prevent Horizontal Page Bleeding */
+    html, body {
+        width: 100%;
+        overflow-x: hidden !important;
+        font-size: 14px; /* Slight typographic downscale for mobile high-density screens */
+    }
+
+    /* 2. Convert Dual Columns / Sidebars into a Stacked Stream */
+    .workspace-container, 
+    main, 
+    .dashboard-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 10px !important;
+        gap: 15px !important;
+    }
+
+    /* 3. Force Side Panels, Floating Calculators & Modules to Full Width */
+    aside, 
+    .sidebar-panel, 
+    .calculator-card, 
+    .widget-box,
+    #dashboard,
+    #tableContainer {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        position: relative !important; /* Strips unexpected desktop fixed alignments */
+        top: auto !important;
+        right: auto !important;
+        margin: 0 0 15px 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 4. Form Field Packing Optimization */
+    .form-group-row, 
+    .input-grid-layout {
+        grid-template-columns: 100% !important; /* Break multi-column input alignments */
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+
+    input[type="text"], 
+    input[type="number"], 
+    textarea, 
+    select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* ⚠️ CRITICAL: Prevents iOS Safari from forcing an ugly automatic zoom on focus */
+        padding: 12px !important; /* Enhanced touch target size */
+    }
+
+    /* 5. Fluid Buttons */
+    button, 
+    .btn, 
+    #autoFillBtn, 
+    #calculateBtn, 
+    #calcNextDayBtn {
+        width: 100% !important;
+        padding: 14px !important;
+        font-size: 15px !important;
+        text-align: center;
+    }
+
+    /* 6. DataCore Ledger Table Horizontal Scroll Safeguard */
+    #tableContainer, 
+    .data-table-wrapper {
+        width: 100% !important;
+        overflow-x: auto !important; /* Adds a fluid horizontal swipe layer isolated to just the table data matrix */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        width: 100% !important;
+        white-space: nowrap; /* Keeps rows neat while panning */
+    }
+
+    /* 7. Landing Page Cards Optimization */
+    .card-control-center-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+    
+    .card-control-center-wrapper > div {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}

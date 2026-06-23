@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no">
     <title>Business Parser 4.0 - Integrated DataCore Suite</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
@@ -220,6 +220,20 @@
                             <label>Extracted Market/Location:</label>
                             <input type="text" id="displayMarket" placeholder="Waiting for extraction..." readonly>
                         </div>
+                    </div>
+
+                    <div id="extraction-mismatch-flag" style="display: none; background-color: #fffbeb; border-left: 4px solid #f59e0b; 
+                        padding: 15px; margin: 15px 0; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                        <span style="font-size: 1.15rem; line-height: 1;">⚠️</span>
+                        <div>
+                            <p id="extraction-warning-details" style="color: #78350f; font-size: 0.825rem; font-family: system-ui, sans-serif; line-height: 1.5; margin: 0 0 10px 0;"></p>
+                            <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; font-weight: 600; color: #78350f; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="sheet-correction-override" style="accent-color: #d97706; width: 14px; height: 14px; cursor: pointer;"> 
+                                Auto-correct form using historical Google Sheet metrics
+                            </label>
+                        </div>
+                    </div>
                     </div>
 
                     <form id="parserForm">
