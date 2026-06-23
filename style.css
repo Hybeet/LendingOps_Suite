@@ -885,31 +885,6 @@ footer button a {
         background: rgb(248,250,252) !important;
     }
 
-    .nav-datacore-panel.scrolled-state {
-        position: fixed !important;
-        top: 80px !important;
-        right: 16px !important;
-        left: auto !important;
-        width: auto !important;
-        max-width: 150px !important;
-        flex-direction: column !important;
-        background: rgba(255, 255, 255, 0.25) !important;
-        backdrop-filter: blur(8px) !important;
-        -webkit-backdrop-filter: blur(8px) !important;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-        border-radius: 12px !important;
-        z-index: 9999 !important;
-    }
-
-    .nav-datacore-panel.scrolled-state .nav-btn {
-        width: 100% !important;
-        padding: 6px 10px !important;
-        font-size: 10.5px !important;
-        white-space: nowrap !important;
-        background: rgba(255, 255, 255, 0.7) !important;
-    }
-
     .nav-datacore-panel .nav-btn {
         flex: 1 1 auto !important;
         width: auto !important;
