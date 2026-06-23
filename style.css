@@ -714,20 +714,21 @@ footer button a {
 }
 
 /* =========================================================================
-   📱 MOBILE LAYOUT COMPLIANCE ENGINE (Max-Width: 768px)
+   📱 UNIFIED MOBILE RESPONSIVENESS MATRIX (Max-Width: 768px)
    ========================================================================= */
 @media screen and (max-width: 768px) {
     
-    /* 1. Prevent Horizontal Page Bleeding */
+    /* ---------------------------------------------------------------------
+       1. GLOBAL ROOT & LAYOUT BREAKS
+       --------------------------------------------------------------------- */
     html, body {
         width: 100%;
         overflow-x: hidden !important;
-        font-size: 14px; /* Slight typographic downscale for mobile high-density screens */
+        font-size: 14px;
     }
 
-    /* 2. Convert Dual Columns / Sidebars into a Stacked Stream */
-    .workspace-container, 
-    main, 
+    .page-container,
+    .main-wrapper, 
     .dashboard-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -735,106 +736,30 @@ footer button a {
         gap: 15px !important;
     }
 
-    /* 3. Force Side Panels, Floating Calculators & Modules to Full Width */
-    aside, 
-    .sidebar-panel, 
-    .calculator-card, 
-    .widget-box,
-    #dashboard,
-    #tableContainer {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 100% !important;
-        position: relative !important; /* Strips unexpected desktop fixed alignments */
-        top: auto !important;
-        right: auto !important;
-        margin: 0 0 15px 0 !important;
-        box-sizing: border-box !important;
-    }
-
-    /* 4. Form Field Packing Optimization */
-    .form-group-row, 
-    .input-grid-layout {
-        grid-template-columns: 100% !important; /* Break multi-column input alignments */
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 8px !important;
-    }
-
-    input[type="text"], 
-    input[type="number"], 
-    textarea, 
-    select {
-        width: 100% !important;
-        box-sizing: border-box !important;
-        font-size: 16px !important; /* ⚠️ CRITICAL: Prevents iOS Safari from forcing an ugly automatic zoom on focus */
-        padding: 12px !important; /* Enhanced touch target size */
-    }
-
-    /* 5. Fluid Buttons */
-    button, 
-    .btn, 
-    #autoFillBtn, 
-    #calculateBtn, 
-    #calcNextDayBtn {
-        width: 100% !important;
-        padding: 14px !important;
-        font-size: 15px !important;
-        text-align: center;
-    }
-
-    /* 6. DataCore Ledger Table Horizontal Scroll Safeguard */
-    #tableContainer, 
-    .data-table-wrapper {
-        width: 100% !important;
-        overflow-x: auto !important; /* Adds a fluid horizontal swipe layer isolated to just the table data matrix */
-        -webkit-overflow-scrolling: touch;
-    }
-
-    table {
-        width: 100% !important;
-        white-space: nowrap; /* Keeps rows neat while panning */
-    }
-
-    /* 7. Landing Page Cards Optimization */
-    .card-control-center-wrapper {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 16px !important;
-    }
-    
-    .card-control-center-wrapper > div {
-        width: 100% !important;
-        margin: 0 !important;
-    }
-}
-
-/* =========================================================================
-   📱 MOBILE HEADER & CARD COMPACT ENGINE (Max-Width: 768px)
-   ========================================================================= */
-@media screen and (max-width: 768px) {
-
-    /* 1. Slim Down the Main Top Navigation Bar Container */
+    /* ---------------------------------------------------------------------
+       2. TOP NAVBAR & NAVIGATION LINK GAP CORRECTIONS
+       --------------------------------------------------------------------- */
     .global-navbar {
-        padding: 10px 14px !important;
-        height: auto !important;
+        padding: 12px 16px !important; /* Creates breathing room inside edges */
+        display: flex !important;
         flex-direction: row !important;
-        justify-content: space-between !important;
+        justify-content: space-between !important; /* Pushes logo far left, buttons far right */
         align-items: center !important;
-        gap: 8px !important;
+        gap: 20px !important; /* Guarantees layout buffer gap */
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
-    /* Keep Title Small and Compact */
     .global-navbar .nav-logo {
-        font-size: 16px !important;
+        font-size: 15px !important;
         font-weight: 700 !important;
-        letter-spacing: -0.3px;
+        flex-shrink: 0 !important; /* Prevents text from breaking or squishing */
     }
 
-    /* Reduce Button Sizing to Fit Side-by-Side on Narrow Screen Viewports */
     .global-navbar .nav-links {
         display: flex !important;
         gap: 6px !important;
+        flex-shrink: 0 !important;
     }
 
     .global-navbar .nav-btn {
@@ -844,8 +769,9 @@ footer button a {
         border-radius: 6px !important;
     }
 
-    /* 2. Compact the Floating Workspace Section Jumper Bar Panels */
+    /* Floating DataCore Tab Section Jumper Panel */
     .nav-datacore-panel {
+        display: flex !important;
         padding: 6px !important;
         gap: 6px !important;
         margin: 10px auto !important;
@@ -853,12 +779,15 @@ footer button a {
     }
 
     .nav-datacore-panel .nav-btn {
+        flex: 1 !important;
         padding: 8px !important;
         font-size: 11px !important;
         text-align: center !important;
     }
 
-    /* 3. Drop Wording Scaling in Hero Box Components */
+    /* ---------------------------------------------------------------------
+       3. HERO BANNER & COMPACT MAIN INFO CARDS GRID
+       --------------------------------------------------------------------- */
     .welcome-hero {
         padding: 20px 14px !important;
         text-align: center !important;
@@ -875,49 +804,77 @@ footer button a {
         line-height: 1.4 !important;
     }
 
-    /* 4. Downscale Main Home Grid Content & Text Descriptions */
     .info-cards-grid {
         display: flex !important;
         flex-direction: column !important;
-        gap: 16px !important;
+        gap: 12px !important; /* Tightens space between blocks */
         padding: 0 12px !important;
     }
 
     .info-card {
-        padding: 16px !important;
-        border-radius: 12px !important;
+        padding: 12px 14px !important; /* Compresses vertical profile padding */
+        border-radius: 10px !important;
         box-sizing: border-box !important;
+        
+        /* Shifts internal elements into a side-by-side grid layout to minimize height */
+        display: grid !important;
+        grid-template-columns: auto 1fr !important;
+        column-gap: 14px !important;
+        row-gap: 4px !important;
+        align-items: start !important;
     }
 
     .info-card .card-icon {
-        font-size: 20px !important;
-        margin-bottom: 8px !important;
-    }
-
-    /* Card Titles */
-    .info-card h3 {
-        font-size: 15px !important;
-        margin-top: 4px !important;
-        margin-bottom: 6px !important;
-    }
-
-    /* Card Paragraph Wordings */
-    .info-card p {
-        font-size: 12px !important;
-        line-height: 1.45 !important;
-        color: #4b5563 !important;
-    }
-
-    /* Compact Action Buttons inside Cards */
-    .info-card .action-link-btn {
-        width: 100% !important;
-        padding: 10px !important;
-        font-size: 13px !important;
-        margin-top: 12px !important;
+        grid-column: 1 !important;
+        grid-row: 1 / span 2 !important; /* Places icon neatly on the left column */
+        font-size: 22px !important;
+        margin: 2px 0 0 0 !important;
         text-align: center;
     }
 
-    /* 5. Sub-Header Titles inside Workspace Views */
+    .info-card h3 {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        font-size: 14px !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .info-card p {
+        grid-column: 2 !important;
+        grid-row: 2 !important;
+        font-size: 11.5px !important;
+        line-height: 1.35 !important;
+        margin: 4px 0 0 0 !important;
+    }
+
+    .info-card .action-link-btn {
+        grid-column: 1 / span 2 !important; /* Stretches wide across the card base */
+        width: 100% !important;
+        padding: 8px !important;
+        font-size: 12px !important;
+        margin-top: 8px !important;
+        text-align: center;
+    }
+
+    /* ---------------------------------------------------------------------
+       4. COLUMN WORKSPACES & INTERACTIVE DATA ENTRY VERIFICATION FORMS
+       --------------------------------------------------------------------- */
+    .column, 
+    .panel,
+    .left-compartment,
+    .mini-calc-panel,
+    .mini-calc-panel2 {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        margin: 0 0 15px 0 !important;
+        box-sizing: border-box !important;
+    }
+
     #parser-section header h2 {
         font-size: 18px !important;
         text-align: center;
@@ -926,5 +883,62 @@ footer button a {
     #parser-section header p {
         font-size: 12px !important;
         text-align: center;
+    }
+
+    /* Grid layout flattening overrides */
+    .grid-2, 
+    .calc-grid, 
+    .calc-grid2,
+    .metadata-bar {
+        grid-template-columns: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    /* Essential Touch-Target Fields & Zoom Prevention Rules */
+    input[type="text"], 
+    input[type="number"], 
+    textarea, 
+    select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* Prevents mobile Safari from forcing layout zoom on tap */
+        padding: 10px !important;
+    }
+
+    button, 
+    .secondary-btn,
+    .calc-action-btn,
+    #calculateBtn {
+        width: 100% !important;
+        padding: 12px !important;
+        font-size: 14px !important;
+        text-align: center;
+    }
+
+    /* ---------------------------------------------------------------------
+       5. DATACORE LEDGER DATA MATRICES & KNOWLEDGE HUB ACCORDIONS
+       --------------------------------------------------------------------- */
+    .knowledge-grid {
+        grid-template-columns: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    /* Isolated Matrix Horizontal Swiping Containment Layer */
+    .table-scroll-container,
+    #tableContainer,
+    .audit-panel {
+        width: 100% !important;
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .datacore-data-table,
+    table {
+        width: 100% !important;
+        white-space: nowrap !important; /* Preserves column tracking architecture intact */
     }
 }
