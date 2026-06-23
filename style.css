@@ -727,7 +727,7 @@ footer button a {
         font-size: 14px;
     }
 
-    /* Fixed: Removed .page-container from here so it doesn't break your script's hidden utility */
+    .page-container,
     .main-wrapper, 
     .dashboard-grid {
         display: flex !important;
@@ -736,40 +736,25 @@ footer button a {
         gap: 15px !important;
     }
 
-    /* Guardrail: Ensures hidden pages stay completely invisible on mobile */
-    .hidden,
-    #workspace-page.hidden,
-    #home-page.hidden {
-        display: none !important;
-    }
-
-    /* Standardized padding rule for pages when active */
-    .page-container:not(.hidden) {
-        display: flex !important;
-        flex-direction: column !important;
-        padding: 10px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
     /* ---------------------------------------------------------------------
        2. TOP NAVBAR & NAVIGATION LINK GAP CORRECTIONS
        --------------------------------------------------------------------- */
     .global-navbar {
-        padding: 12px 16px !important; 
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: space-between !important; 
+        padding: 12px 16px !important; /* Creates breathing room inside edges */
+        justify-content: space-between !important; /* Pushes logo far left, buttons far right */
         align-items: center !important;
-        gap: 20px !important; 
+        gap: 20px !important; /* Guarantees layout buffer gap */
         width: 100% !important;
         box-sizing: border-box !important;
+        height: auto !important; /* Reduces navbar height for mobile */
+        flex-direction: row !important; /* Ensures horizontal layout of logo and buttons */
     }
 
     .global-navbar .nav-logo {
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 700 !important;
-        flex-shrink: 0 !important; 
+        flex-shrink: 0 !important; /* Prevents text from breaking or squishing */
+        letter-spacing: -0.3px !important; /* Slightly tighter spacing for mobile */
     }
 
     .global-navbar .nav-links {
@@ -785,27 +770,18 @@ footer button a {
         border-radius: 6px !important;
     }
 
-    /* Fixed Alignment: Cleaned up structural boundaries for the floating workspace sub-menu tabs */
+    /* Floating DataCore Tab Section Jumper Panel */
     .nav-datacore-panel {
-        display: flex !important;
-        flex-direction: row !important;
-        padding: 4px !important;
+        padding: 6px !important;
         gap: 6px !important;
         margin: 10px auto !important;
-        width: calc(100% - 20px) !important; /* Stretches nicely with safety padding on left/right */
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        position: relative !important; 
-        left: auto !important;
-        transform: none !important;
+        width: 95% !important;
     }
 
     .nav-datacore-panel .nav-btn {
-        flex: 1 !important;
-        padding: 8px 4px !important;
+        padding: 8px !important;
         font-size: 11px !important;
         text-align: center !important;
-        white-space: nowrap !important;
     }
 
     /* ---------------------------------------------------------------------
@@ -830,14 +806,16 @@ footer button a {
     .info-cards-grid {
         display: flex !important;
         flex-direction: column !important;
-        gap: 12px !important; 
+        gap: 12px !important; /* Tightens space between blocks */
         padding: 0 12px !important;
     }
 
     .info-card {
-        padding: 12px 14px !important; 
+        padding: 12px 14px !important; /* Compresses vertical profile padding */
         border-radius: 10px !important;
         box-sizing: border-box !important;
+        
+        /* Shifts internal elements into a side-by-side grid layout to minimize height */
         display: grid !important;
         grid-template-columns: auto 1fr !important;
         column-gap: 14px !important;
@@ -847,7 +825,7 @@ footer button a {
 
     .info-card .card-icon {
         grid-column: 1 !important;
-        grid-row: 1 / span 2 !important; 
+        grid-row: 1 / span 2 !important; /* Places icon neatly on the left column */
         font-size: 22px !important;
         margin: 2px 0 0 0 !important;
         text-align: center;
@@ -870,7 +848,7 @@ footer button a {
     }
 
     .info-card .action-link-btn {
-        grid-column: 1 / span 2 !important; 
+        grid-column: 1 / span 2 !important; /* Stretches wide across the card base */
         width: 100% !important;
         padding: 8px !important;
         font-size: 12px !important;
@@ -879,13 +857,14 @@ footer button a {
     }
 
     /* ---------------------------------------------------------------------
-       4. COLUMN WORKSPACES & DATA ENTRY FORMS
+       4. COLUMN WORKSPACES & INTERACTIVE DATA ENTRY VERIFICATION FORMS
        --------------------------------------------------------------------- */
-    .column, 
-    .panel,
-    .left-compartment,
-    .mini-calc-panel,
-    .mini-calc-panel2 {
+    .page-container:not(.hidden) .main-wrapper,
+    .page-container:not(.hidden) .column,
+    .page-container:not(.hidden) .panel,
+    .page-container:not(.hidden) .left-compartment,
+    .page-container:not(.hidden) .mini-calc-panel,
+    .page-container:not(.hidden) .mini-calc-panel2 {
         width: 100% !important;
         max-width: 100% !important;
         min-width: 100% !important;
@@ -906,6 +885,7 @@ footer button a {
         text-align: center;
     }
 
+    /* Grid layout flattening overrides */
     .grid-2, 
     .calc-grid, 
     .calc-grid2,
@@ -916,13 +896,14 @@ footer button a {
         gap: 10px !important;
     }
 
+    /* Essential Touch-Target Fields & Zoom Prevention Rules */
     input[type="text"], 
     input[type="number"], 
     textarea, 
     select {
         width: 100% !important;
         box-sizing: border-box !important;
-        font-size: 16px !important; 
+        font-size: 16px !important; /* Prevents mobile Safari from forcing layout zoom on tap */
         padding: 10px !important;
     }
 
@@ -937,7 +918,7 @@ footer button a {
     }
 
     /* ---------------------------------------------------------------------
-       5. DATACORE LEDGER DATA MATRICES & KNOWLEDGE HUB
+       5. DATACORE LEDGER DATA MATRICES & KNOWLEDGE HUB ACCORDIONS
        --------------------------------------------------------------------- */
     .knowledge-grid {
         grid-template-columns: 100% !important;
@@ -946,6 +927,7 @@ footer button a {
         gap: 10px !important;
     }
 
+    /* Isolated Matrix Horizontal Swiping Containment Layer */
     .table-scroll-container,
     #tableContainer,
     .audit-panel {
@@ -957,6 +939,6 @@ footer button a {
     .datacore-data-table,
     table {
         width: 100% !important;
-        white-space: nowrap !important; 
+        white-space: nowrap !important; /* Preserves column tracking architecture intact */
     }
 }
