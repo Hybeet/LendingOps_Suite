@@ -646,20 +646,36 @@ function renderDynamicDataCoreLedger() {
                 badgeHTML = `<span id="badge-row-${idx}" class="badge badge-default" style="background: #ef4444; color:white; padding:4px 8px; border-radius:4px;">Defaulter Row</span>`;
             }
 
-            if (recoveriesString !== "" && normName !== "" && recoveriesString.includes(normName)) {
+            // 🛠️ BULLETPROOF UPDATE (Lines 649 onwards)
+            let parsedCollected = parseFloat(client.collectedToday) || 0;
+            let expectedTarget = parseFloat(calculatedFinalRepayment) || 0;
+
+            // If they collected exactly what was expected, or if they collected 9600 and that matches their expected tier
+            if (parsedCollected === expectedTarget && expectedTarget > 0) {
+                
+                // Force them to be Active cleanly - it's just their final regular payment!
+                hasNewActivity = true;
+                badgeHTML = `<span id="badge-row-${idx}" class="badge badge-active" style="background: #10b981; color:white; padding:4px 8px; border-radius:4px;">Active</span>`;
+
+            } else if (recoveriesString !== "" && normName !== "" && recoveriesString.includes(normName)) {
+                
                 const innerRegex = new RegExp(`name:\\s*${escapeRegExp(normName)}[\\s\\S]*?amount\\s*=\\s*([0-9,.]+)`, "i");
                 const innerMatch = recoveriesString.match(innerRegex);
                 let extractedAmt = innerMatch ? parseFloat(innerMatch[1].replace(/,/g, '')) : 0;
-                
-                // Absolute firewall guard rule applied here
-                if (isSettledLoan || isOutstandingCust) {
-                    calculatedFinalRepayment = extractedAmt; 
+
+                // If the recovery text amount perfectly matches what they paid for their normal cycle, it's NOT an injection!
+                if (extractedAmt === parsedCollected) {
+                    hasNewActivity = true;
+                    badgeHTML = `<span id="badge-row-${idx}" class="badge badge-active" style="background: #10b981; color:white; padding:4px 8px; border-radius:4px;">Active</span>`;
+                } else if (isSettledLoan || isOutstandingCust) {
+                    calculatedFinalRepayment = extractedAmt;
                 } else {
-                    calculatedFinalRepayment += extractedAmt; 
+                    calculatedFinalRepayment += extractedAmt;
+                    hasNewActivity = true;
+                    badgeHTML = `<span id="badge-row-${idx}" class="badge badge-recovery" style="background: #3b82f6; color:white; padding:4px 8px; border-radius:4px;">Injected Recovery</span>`;
                 }
-                hasNewActivity = true;
-                badgeHTML = `<span id="badge-row-${idx}" class="badge badge-recovery" style="background: #3b82f6; color:white; padding:4px 8px; border-radius:4px;">Injected Recovery</span>`;
             }
+
 
             if (paydownsString !== "" && normName !== "" && paydownsString.includes(normName)) {
                 const innerRegex = new RegExp(`name:\\s*${escapeRegExp(normName)}[\\s\\S]*?amount\\s*=\\s*([0-9,.]+)`, "i");
@@ -803,7 +819,9 @@ function postDataCoreTransactionsToSheets() {
         let constructedComment = "";
         if (isSpecialActivity) {
             if (activityType === "Default Set") {
-                constructedComment = `Marked Defaulter Row for ${client.accountName} on ${dataCoreSessionState.activeDate}`;
+                //1. THIS RUNS THE MATH EQUATIONS FIRST SO THE VALUE EXISTS
+                let fullDefaultAmount = parseFloat (client.dailyRepayment) || 0;
+                constructedComment = `Marked Defaulter Row for (₦${fullDefaultAmount.toLocaleString()} for ${client.accountName} on ${dataCoreSessionState.activeDate}`;
             } else {
                 // Isolate the exact transaction amount by subtracting the normal daily repayment from the cell total
                 let regularDayRate = parseFloat(client.dailyRepayment) || 0;
