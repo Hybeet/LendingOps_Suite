@@ -478,6 +478,7 @@ function runOutstandingCalc() {
     const sumtotal = outcell0 + outCell3 - outCell4;
     document.getElementById('outstandingResult').innerText = "₦" + sumtotal.toLocaleString();
 }
+document.getElementById('calcOutstandingBtn').addEventListener('click', runOutstandingCalc);
 
 // [IMPLEMENTATION FIX]: Interactive Change Event Listener for System Override Checkbox Block
 document.addEventListener('change', function(e) {
