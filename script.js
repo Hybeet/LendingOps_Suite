@@ -163,8 +163,8 @@ function extractData() {
         'interestOnDeals': getValue("Intere[a-z]* on Deals"),
         'formsSold': getValue("daily forms sold"),
         'cardsSold': getValue("daily cards sold"),
-        'payOff': getValue("pay[a-z]* off collected Today"),
-        'payOff2': getValue("pay[a-z]* off collected Today"),
+        'payOff': getValue("Payoff[a-z]* Analysis of today"),
+        'payOff2': getValue("Payoff[a-z]* Analysis of today"),
         'TotalDeposit': getValue("Total Deposits to Bank"),
         'defaultAmt': getValue("Default"),
         'defaultAmt2': getValue("Default"),
@@ -513,7 +513,7 @@ document.getElementById('calculateBtn').addEventListener('click', runCalculation
 // =========================================================================
 // 🎛️ DATACORE DATA LEDGER GRID DESKTOP CONTAINER (CORRECTED BALANCE ENGINE)
 // =========================================================================
-const DATACORE_REGISTRY_API = "https://script.google.com/macros/s/AKfycbwaye4TbDVpN1sKpnEUtBXyS2lBwMhm0n-o2UxgM9y1JiodqOymuwpcPKxr77xWnh9_Ig/exec"; 
+const DATACORE_REGISTRY_API = "https://script.google.com/macros/s/AKfycby5bNsy5F8CwyczbH0y8495nBXLRN0yTRzivHv6jTS87qRuq1Mbugzs5K1PgoI0N_jN_w/exec"; 
 
 let dataCoreSessionState = {
     activeMarket: "",
@@ -602,8 +602,9 @@ function renderDynamicDataCoreLedger() {
     const recoveryBlock = text.match(new RegExp(`\\*Recovery with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
     const paydownBlock = text.match(new RegExp(`\\*Pay down with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
     const usedPaydownBlock = text.match(new RegExp(`\\*Use pay down with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
-    const payoffBlock = text.match(new RegExp(`\\*Pay off(?:\\s+analysis\\s+for\\s+today)?\\s*=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
-
+    const payoffBlock = text.match(
+        /\*Pay\s*off(?:\s+Analysis\s+(?:of|for)\s+today)?\s*=([\s\S]*?)(?=\*Default|\*Recovery|\*Pay down|\*Use pay down|\*Record of Form|$)/i
+    );
     const defaultsString = defaultBlock ? defaultBlock[1].toLowerCase() : "";
     const recoveriesString = recoveryBlock ? recoveryBlock[1].toLowerCase() : "";
     const paydownsString = paydownBlock ? paydownBlock[1].toLowerCase() : "";
@@ -625,40 +626,168 @@ function renderDynamicDataCoreLedger() {
         }
 
         // 🛠️ FIREWALL INTERCEPT: Explicitly flag outstanding accounts and finished profiles
-        let isOutstandingCust = (client.status === "Outstanding Customer" || processedDays > 25);
-        let isSettledLoan = (client.status === "Settled" || parseFloat(client.principalAmount) <= 0);
-        
+        let isOutstandingCust =
+            (client.status === "Outstanding Customer" || processedDays > 25);
+
+        let isSettledLoan =
+            (client.status === "Settled");
+
+        let isFutureLoan =
+            (client.status === "Future Disbursement");  
+            
+        // Check whether this loan was disbursed on the current report date
+        const reportDate = dataCoreSessionState.activeDate;
+        const disbursementDate = client.disbursementDate;
+
+        const isDisbursedToday = reportDate === disbursementDate;
         // Forced baseline allocation mapping hook
-        let baseRepayment = (isOutstandingCust || isSettledLoan) ? 0 : (parseFloat(client.dailyRepayment) || 0);
+        let baseRepayment =
+            (isOutstandingCust || isSettledLoan || isDisbursedToday)
+                ? 0
+                : (parseFloat(client.dailyRepayment) || 0);        
+        
         let calculatedFinalRepayment = baseRepayment;
         let hasNewActivity = false; 
-        
-        let badgeHTML = isOutstandingCust 
-            ? `<span id="badge-row-${idx}" class="badge badge-outstanding" style="background:#dc2626; color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">Outstanding Customer</span>`
-            : `<span id="badge-row-${idx}" class="badge badge-active" style="background:#10b981; color:white; padding:4px 8px; border-radius:4px;">Active</span>`;
-            
+        let parsedCollected = parseFloat(client.collectedToday) || 0;
+
+        let badgeHTML;
+
+        if (isFutureLoan) {
+
+            badgeHTML =
+            `<span id="badge-row-${idx}"
+            class="badge badge-future"
+            style="
+                background:#6b7280;
+                color:white;
+                padding:4px 8px;
+                border-radius:4px;">
+                No Activity
+            </span>`;
+
+        }
+        else if (isOutstandingCust) {
+
+            badgeHTML =
+            `<span id="badge-row-${idx}"
+            class="badge badge-outstanding"
+            style="
+                background:#dc2626;
+                color:white;
+                padding:4px 8px;
+                border-radius:4px;
+                font-weight:bold;">
+                Outstanding Customer
+            </span>`;
+
+        }
+        else if (isDisbursedToday) {
+
+            badgeHTML =
+            `<span id="badge-row-${idx}"
+            class="badge badge-future"
+            style="
+                background:#6b7280;
+                color:white;
+                padding:4px 8px;
+                border-radius:4px;">
+                No Activity
+            </span>`;
+
+        }
+        else {
+
+            badgeHTML =
+            `<span id="badge-row-${idx}"
+            class="badge badge-active"
+            style="
+                background:#10b981;
+                color:white;
+                padding:4px 8px;
+                border-radius:4px;">
+                Active
+            </span>`;
+
+        }         
         const normName = String(client.accountName).toLowerCase().trim();
         const isLastInstance = (lastRowIndexMap[normName] === idx);
 
-        if (isLastInstance) {
+        if (isLastInstance && !isFutureLoan && !isDisbursedToday) {
             if (defaultsString !== "" && normName !== "" && defaultsString.includes(normName)) {
-                calculatedFinalRepayment = 0;
+
+                const defaultRegex = new RegExp(
+                    `name:\\s*${escapeRegExp(normName)}[\\s\\S]*?amount\\s*=\\s*([0-9,.]+)`,
+                    "i"
+                );
+
+                const defaultMatch = defaultsString.match(defaultRegex);
+
+                let defaultAmount = baseRepayment;
+
+                if (defaultMatch) {
+                    defaultAmount = parseFloat(defaultMatch[1].replace(/,/g, "")) || 0;
+                }
+
+                // Remove ONLY the defaulted amount
+                calculatedFinalRepayment = Math.max(
+                    0,
+                    baseRepayment - defaultAmount
+                );
+
                 hasNewActivity = true;
-                badgeHTML = `<span id="badge-row-${idx}" class="badge badge-default" style="background: #ef4444; color:white; padding:4px 8px; border-radius:4px;">Defaulter Row</span>`;
+
+                if (defaultAmount >= baseRepayment) {
+
+                    badgeHTML = `
+                    <span id="badge-row-${idx}"
+                    class="badge badge-default"
+                    style="background:#dc2626;color:white;padding:4px 8px;border-radius:4px;">
+                    Full Default
+                    </span>`;
+
+                } else {
+
+                    badgeHTML = `
+                    <span id="badge-row-${idx}"
+                    class="badge badge-default"
+                    style="background:#ef4444;color:white;padding:4px 8px;border-radius:4px;">
+                    Partial Default
+                    </span>`;
+
+                }
             }
 
             // 🛠️ BULLETPROOF UPDATE (Lines 649 onwards)
-            let parsedCollected = parseFloat(client.collectedToday) || 0;
-            let expectedTarget = parseFloat(calculatedFinalRepayment) || 0;
+            // Never activate loans disbursed on the report date
+            if (isDisbursedToday) {
+                calculatedFinalRepayment = 0;
+                hasNewActivity = false;
 
-            // If they collected exactly what was expected, or if they collected 9600 and that matches their expected tier
-            if (parsedCollected === expectedTarget && expectedTarget > 0) {
-                
-                // Force them to be Active cleanly - it's just their final regular payment!
-                hasNewActivity = true;
-                badgeHTML = `<span id="badge-row-${idx}" class="badge badge-active" style="background: #10b981; color:white; padding:4px 8px; border-radius:4px;">Active</span>`;
+                badgeHTML = `
+                <span id="badge-row-${idx}"
+                class="badge badge-future"
+                style="background:#6b7280;color:white;padding:4px 8px;border-radius:4px;">
+                    No Activity
+                </span>`;
 
-            } else if (recoveriesString !== "" && normName !== "" && recoveriesString.includes(normName)) {
+            }
+            else {
+                let expectedTarget = parseFloat(calculatedFinalRepayment) || 0;
+
+                if (parsedCollected === expectedTarget && expectedTarget > 0) {
+
+                    hasNewActivity = true;
+
+                    badgeHTML = `
+                    <span id="badge-row-${idx}"
+                    class="badge badge-active"
+                    style="background:#10b981;color:white;padding:4px 8px;border-radius:4px;">
+                        Active
+                    </span>`;
+                }
+            } 
+            
+            if (recoveriesString !== "" && normName !== "" && recoveriesString.includes(normName)) {
                 
                 const innerRegex = new RegExp(`name:\\s*${escapeRegExp(normName)}[\\s\\S]*?amount\\s*=\\s*([0-9,.]+)`, "i");
                 const innerMatch = recoveriesString.match(innerRegex);
@@ -704,6 +833,39 @@ function renderDynamicDataCoreLedger() {
                 hasNewActivity = true;
                 badgeHTML = `<span id="badge-row-${idx}" class="badge badge-payoff" style="background: rgb(32, 228, 228); color:white; padding:4px 8px; border-radius:4px;">Pay Off Added</span>`;
             }
+        }
+
+        if (isFutureLoan &&
+            paydownsString !== "" &&
+            normName !== "" &&
+            paydownsString.includes(normName)) {
+
+            const innerRegex = new RegExp(
+                `name:\\s*${escapeRegExp(normName)}[\\s\\S]*?amount\\s*=\\s*([0-9,.]+)`,
+                "i"
+            );
+
+            const innerMatch = paydownsString.match(innerRegex);
+
+            let extractedAmt =
+                innerMatch
+                ? parseFloat(innerMatch[1].replace(/,/g, ""))
+                : 0;
+
+            calculatedFinalRepayment = extractedAmt;
+
+            hasNewActivity = true;
+
+            badgeHTML =
+            `<span id="badge-row-${idx}"
+            class="badge badge-paydown"
+            style="
+                background:#eab308;
+                color:white;
+                padding:4px 8px;
+                border-radius:4px;">
+                Future Pay Down
+            </span>`;
         }
 
         if (isSettledLoan && !hasNewActivity) {
@@ -819,10 +981,39 @@ function postDataCoreTransactionsToSheets() {
 
         let constructedComment = "";
         if (isSpecialActivity) {
+            console.log("Reached Special Activity");
+            console.log("ActivityType:", activityType);
             if (activityType === "Default Set") {
-                //1. THIS RUNS THE MATH EQUATIONS FIRST SO THE VALUE EXISTS
-                let fullDefaultAmount = parseFloat (client.dailyRepayment) || 0;
-                constructedComment = `Marked Defaulter Row for (₦${fullDefaultAmount.toLocaleString()} for ${client.accountName} on ${dataCoreSessionState.activeDate}`;
+
+                console.log("Inside Default Set");
+                const normalRepayment =
+                    parseFloat(client.dailyRepayment) || 0;
+
+                const amountCollected = collectedAmt;
+
+                const defaultAmount =
+                    Math.max(0, normalRepayment - amountCollected);
+
+                console.log({
+                    customer: client.accountName,
+                    normalRepayment,
+                    amountCollected,
+                    defaultAmount
+                });
+                if (amountCollected <= 0) {
+
+                    constructedComment =
+                        `Full Default of ₦${normalRepayment.toLocaleString()} for ${client.accountName} on ${dataCoreSessionState.activeDate}`;
+
+                } else {
+
+                    const defaultAmount = normalRepayment - amountCollected;
+
+                    constructedComment =
+                        `Partial Default of ₦${defaultAmount.toLocaleString()} for ${client.accountName} on ${dataCoreSessionState.activeDate}`;
+
+                }
+
             } else {
                 // Isolate the exact transaction amount by subtracting the normal daily repayment from the cell total
                 let regularDayRate = parseFloat(client.dailyRepayment) || 0;
