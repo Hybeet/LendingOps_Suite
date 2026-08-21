@@ -601,7 +601,7 @@ function renderDynamicDataCoreLedger() {
     const defaultBlock = text.match(new RegExp(`\\*Default with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
     const recoveryBlock = text.match(new RegExp(`\\*Recovery with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
     const paydownBlock = text.match(new RegExp(`\\*Pay down with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
-    const usedPaydownBlock = text.match(new RegExp(`\\*Use pay down with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
+    const usedPaydownBlock = text.match(new RegExp(`\\*Used pay down with phone=([\\s\\S]*?)${sectionEndBoundary}`, "i"));
     const payoffBlock = text.match(
         /\*Pay\s*off(?:\s+Analysis\s+(?:of|for)\s+today)?\s*=([\s\S]*?)(?=\*Default|\*Recovery|\*Pay down|\*Use pay down|\*Record of Form|$)/i
     );
