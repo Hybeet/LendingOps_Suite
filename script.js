@@ -3129,6 +3129,7 @@ function renderDynamicDataCoreLedger() {
                     index;
             }
         });
+
     
     /*
      * ---------------------------------------------------------------
@@ -3318,6 +3319,326 @@ function renderDynamicDataCoreLedger() {
                 : ""
         );
 
+
+    /* ================================================================
+    * PAYOFF RECIPIENT
+    * ================================================================
+    *
+    * RULE:
+    *
+    * If a customer has:
+    *
+    *     OLD ACTIVE LOAN
+    *     NEW LOAN DISBURSED TODAY
+    *
+    * then:
+    *
+    *     OLD LOAN -> Pay Off
+    *     NEW LOAN -> No Activity
+    *
+    * We select the most recent loan whose disbursement date
+    * is strictly BEFORE today's report date.
+    *
+    * This does NOT modify Settled, Recovery, Default,
+    * Pay Down, or normal repayment logic.
+    * ================================================================ */
+
+    function parsePayoffDate(value) {
+
+        if (!value) {
+            return null;
+        }
+
+        /* Handle an actual JavaScript Date object */
+        if (
+            Object.prototype.toString.call(value) ===
+            "[object Date]"
+        ) {
+
+            if (isNaN(value.getTime())) {
+                return null;
+            }
+
+            return new Date(
+                Date.UTC(
+                    value.getFullYear(),
+                    value.getMonth(),
+                    value.getDate()
+                )
+            );
+        }
+
+
+        const valueString =
+            String(value).trim();
+
+        if (!valueString) {
+            return null;
+        }
+
+
+        /*
+        * ------------------------------------------------------------
+        * ISO DATE / ISO DATETIME
+        *
+        * Examples:
+        *
+        * 2026-09-01
+        * 2026-09-01T00:00:00.000Z
+        * ------------------------------------------------------------
+        */
+
+        let match =
+            valueString.match(
+                /^(\d{4})-(\d{1,2})-(\d{1,2})/
+            );
+
+        if (match) {
+
+            const year =
+                Number(match[1]);
+
+            const month =
+                Number(match[2]);
+
+            const day =
+                Number(match[3]);
+
+            const parsed =
+                new Date(
+                    Date.UTC(
+                        year,
+                        month - 1,
+                        day
+                    )
+                );
+
+            if (
+                parsed.getUTCFullYear() !== year ||
+                parsed.getUTCMonth() !== month - 1 ||
+                parsed.getUTCDate() !== day
+            ) {
+                return null;
+            }
+
+            return parsed;
+        }
+
+
+        /*
+        * ------------------------------------------------------------
+        * DD/MM/YYYY OR MM/DD/YYYY
+        * ------------------------------------------------------------
+        */
+
+        match =
+            valueString.match(
+                /^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/
+            );
+
+        if (!match) {
+            return null;
+        }
+
+
+        const first =
+            Number(match[1]);
+
+        const second =
+            Number(match[2]);
+
+        let year =
+            Number(match[3]);
+
+        if (year < 100) {
+            year += 2000;
+        }
+
+
+        let day;
+        let month;
+
+
+        /*
+        * 04/24/2026
+        */
+        if (
+            second > 12 &&
+            first >= 1 &&
+            first <= 12
+        ) {
+
+            month = first;
+            day = second;
+
+        }
+
+        /*
+        * 24/04/2026
+        */
+        else if (
+            first > 12 &&
+            second >= 1 &&
+            second <= 12
+        ) {
+
+            day = first;
+            month = second;
+
+        }
+
+        /*
+        * Application default:
+        * DD/MM/YYYY
+        */
+        else {
+
+            day = first;
+            month = second;
+        }
+
+
+        const parsed =
+            new Date(
+                Date.UTC(
+                    year,
+                    month - 1,
+                    day
+                )
+            );
+
+
+        if (
+            parsed.getUTCFullYear() !== year ||
+            parsed.getUTCMonth() !== month - 1 ||
+            parsed.getUTCDate() !== day
+        ) {
+
+            return null;
+        }
+
+
+        return parsed;
+    }
+
+
+    const payoffRecipientIndexMap = {};
+
+
+    const payoffReportDate =
+        parsePayoffDate(
+            appState.dataCore.activeDate
+        );
+
+
+    if (
+        payoffReportDate &&
+        Object.keys(payoffLookup).length > 0
+    ) {
+
+        appState.dataCore.loadedRecords
+            .forEach((client, index) => {
+
+                const customerKey =
+                    String(
+                        client.accountName || ""
+                    )
+                        .toLowerCase()
+                        .trim();
+
+
+                if (!customerKey) {
+                    return;
+                }
+
+
+                /*
+                * Customer must actually appear in
+                * today's Pay Off section.
+                */
+
+                if (
+                    !payoffLookup[customerKey]
+                ) {
+                    return;
+                }
+
+
+                const disbursementDate =
+                    parsePayoffDate(
+                        client.disbursementDate
+                    );
+
+
+                if (!disbursementDate) {
+                    return;
+                }
+
+
+                /*
+                * NEVER assign Pay Off to today's loan.
+                */
+
+                if (
+                    disbursementDate >=
+                    payoffReportDate
+                ) {
+                    return;
+                }
+
+
+                const existingIndex =
+                    payoffRecipientIndexMap[
+                        customerKey
+                    ];
+
+
+                /*
+                * First previous loan found.
+                */
+
+                if (
+                    existingIndex === undefined
+                ) {
+
+                    payoffRecipientIndexMap[
+                        customerKey
+                    ] = index;
+
+                    return;
+                }
+
+
+                /*
+                * If several previous loans exist,
+                * keep the most recently disbursed one.
+                */
+
+                const existingClient =
+                    appState.dataCore.loadedRecords[
+                        existingIndex
+                    ];
+
+
+                const existingDate =
+                    parsePayoffDate(
+                        existingClient.disbursementDate
+                    );
+
+
+                if (
+                    existingDate &&
+                    disbursementDate >
+                    existingDate
+                ) {
+
+                    payoffRecipientIndexMap[
+                        customerKey
+                    ] = index;
+                }
+
+            });
+    }
 
     appState.dataCore.loadedRecords
         .forEach((client, idx) => {
@@ -3653,6 +3974,9 @@ function renderDynamicDataCoreLedger() {
 
             const isLastInstance =
                 lastRowIndexMap[normName] === idx;
+
+            const isPayoffRecipient =
+                payoffRecipientIndexMap[normName] === idx;
 
 
             if (
@@ -4019,63 +4343,6 @@ function renderDynamicDataCoreLedger() {
 
                 }
 
-                /* ---------------- PAY OFF ---------------- */
-
-                if (
-                    normName &&
-                    payoffLookup[normName]
-                ) {
-
-                    const payoffAmounts =
-                        payoffLookup[normName] || [];
-
-
-                    const extractedAmt =
-                        payoffAmounts.length > 0
-                            ? Number(
-                                payoffAmounts[0]
-                            ) || 0
-                            : 0;
-
-
-                    if (
-                        extractedAmt > 0
-                    ) {
-
-                        calculatedFinalRepayment +=
-                            extractedAmt;
-
-
-                        hasNewActivity =
-                            true;
-
-
-                        transactionConditions.push({
-
-                            type:
-                                "Pay Off",
-
-                            amount:
-                                extractedAmt
-
-                        });
-
-
-                        auditTags.push(
-                            "PAY OFF — ₦" +
-                            extractedAmt.toLocaleString()
-                        );
-
-
-                        badgeText =
-                            "Pay Off Added";
-
-                        badgeClass =
-                            "badge-payoff";
-
-                    }
-
-                }
             }
 
 
@@ -4231,6 +4498,108 @@ function renderDynamicDataCoreLedger() {
 
                     badgeClass =
                         "badge-finished";
+                }
+
+                /* ---------------- PAY OFF ---------------- */
+
+                /*
+                * ---------------------------------------------------------------
+                * PAYOFF RULE — PREVIOUS LOAN ONLY
+                * ---------------------------------------------------------------
+                *
+                * Pay Off belongs to the most recent loan BEFORE today's
+                * report date.
+                *
+                * This block is intentionally OUTSIDE the isLastInstance block.
+                *
+                * Why?
+                *
+                * A customer can have:
+                *
+                *     OLD LOAN
+                *         ↓
+                *     Pay Off today
+                *
+                *     NEW LOAN TODAY
+                *         ↓
+                *     No Activity
+                *
+                * The old loan may NOT be the last customer row.
+                *
+                * IMPORTANT:
+                * We do NOT modify the existing Active / Settled /
+                * Outstanding / Recovery / Pay Down logic.
+                * ---------------------------------------------------------------
+                */
+
+                if (
+                    isPayoffRecipient &&
+                    !isSettledLoan &&
+                    !isFutureLoan &&
+                    !isDisbursedToday &&
+                    payoffLookup[normName]
+                ) {
+
+                    const payoffAmounts =
+                        payoffLookup[normName] || [];
+
+
+                    const extractedAmt =
+                        payoffAmounts.length > 0
+                            ? Number(
+                                payoffAmounts[0]
+                            ) || 0
+                            : 0;
+
+
+                    if (
+                        extractedAmt > 0
+                    ) {
+
+                        /*
+                        * Add the Pay Off to the OLD loan's
+                        * existing calculated repayment.
+                        *
+                        * Example:
+                        *
+                        * Normal repayment = ₦5,000
+                        * Pay Off          = ₦20,000
+                        *
+                        * Final old-loan collection = ₦25,000
+                        */
+
+                        calculatedFinalRepayment +=
+                            extractedAmt;
+
+
+                        hasNewActivity =
+                            true;
+
+
+                        transactionConditions.push({
+
+                            type:
+                                "Pay Off",
+
+                            amount:
+                                extractedAmt
+
+                        });
+
+
+                        auditTags.push(
+                            "PAY OFF — ₦" +
+                            extractedAmt.toLocaleString()
+                        );
+
+
+                        badgeText =
+                            "Pay Off Added";
+
+                        badgeClass =
+                            "badge-payoff";
+
+                    }
                 }
 
 
