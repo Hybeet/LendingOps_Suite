@@ -7304,7 +7304,9 @@ function clearWorkspace() {
 
         balanced: false,
 
-        posting: false
+        posting: false,
+
+        postConfirmed: false
     };
 
 
