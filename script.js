@@ -7308,7 +7308,7 @@ function clearWorkspace() {
 
         postConfirmed: false,
 
-        historicalAuditConfirm: false
+        historicalConfirmed: false
     };
 
 
